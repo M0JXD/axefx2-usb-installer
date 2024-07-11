@@ -1,3 +1,14 @@
+# Axe-FX II USB Firmware Installation Script for Linux.
+
+A recent update to libusb's version of fxload broke the -D option.
+Most distro's are using Hotplug project's version which has been unchanged since 2008, but for Arch it's the "libusb" project. Due to the only versioning being the C DATE macro (that changes with every rebuild) it's hard to tell which you have.
+This is a modified installation script for the Axe-FX II USB Firmware that detects the installed version of fxload via it's error message and sets the appropriate udev rule.
+
+Joachim Gahl (the original script writer) has kindly permitted me to modify the script, although if you wish to make changes you will require his permission. (My permission may be taken as a given.)
+As per the previous versions, these changes do not provide/imply any warranties/guarantees/liabilities.
+
+## Original Readme
+
 This installer will install the Axe-FX II USB Audio Class 2.0 firmware and firmware daemon.
 
 System Requirements:
