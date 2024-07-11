@@ -7,6 +7,8 @@ This is a modified installation script for the Axe-FX II USB Firmware that detec
 Joachim Gahl (the original script writer) has kindly permitted me to modify the script, although if you wish to make changes you will require his permission. (My permission may be taken as a given.)
 As per the previous versions, these changes do not provide/imply any warranties/guarantees/liabilities.
 
+This script was modified on Ubuntu Cinnamon 24.04.
+
 ## Original Readme
 
 This installer will install the Axe-FX II USB Audio Class 2.0 firmware and firmware daemon.
@@ -26,7 +28,7 @@ If the Axe-FX II has been powered up and connected via USB during the installati
 
 For uninstalling simply run axefx2setup.sh adding the option "-u" (without the quotes). As a second optional parameter the path to the udev rules file can be added, but typically this is not necessary.
 
-The script has been written under openSUSE 11.4+ (Modified in 2024 on Ubuntu 24.04) but should work with other LINUX distributions as well. Depending on your system it might be necessary to adjust the path for udev rules files and reload the udev rules manually.
+The script has been written under openSUSE 11.4+ but should work with other LINUX distributions as well. Depending on your system it might be necessary to adjust the path for udev rules files and reload the udev rules manually.
 
 No liability is taken for any damages that may be caused by using this script.
 
