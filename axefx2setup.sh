@@ -1,15 +1,15 @@
 #!/bin/bash
 #
-# Shell script to install or uninstall the firmware file which has to be uploaded to the USB chip of the 
+# Shell script to install or uninstall the firmware file which has to be uploaded to the USB chip of the
 # Fractal Audio Systems Axe-Fx II (Original, Mark II, XL and XL+) via fxload,
 # and to create, modify or delete the udev rules file which runs fxload each time an Axe-Fx II is connected to a USB port.
 #
 # (C) Joachim Gahl - 29.12.2011; 02.11.2012; 17.02.2013; 21.09.2015; 17.10.2015; 10.04.2016; 12.08.2016
-# Modified by Jamie Drinkell 09.06.2024
-# 
+# Modified by Jamie Drinkell - 09.06.2024; 23.01.2026
+#
 
 # ScriptVersion
-version='1.07'
+version='1.08'
 
 # ScriptLocation
 my_path="$(dirname "$(readlink -f "$0")")"  # absolute path to the location where this script has been stored to.
@@ -43,7 +43,7 @@ request ()
 check_root ()
 {
 	# test if script is run with root permissions
-	if [[ $(id -u) -ne 0 ]]; then						
+	if [[ $(id -u) -ne 0 ]]; then
 		request "\naxefx2setup.sh needs to be run with root permissions.\n\n\n$1"
 		exit 1
 	fi
@@ -73,18 +73,18 @@ reload_udevrules ()
 {
 	# the command to reload udev rules can vary between different LINUX distributions, so
 	# if it fails the user will have to restart udev or the computer to refresh udev
-	udevadm control --reload-rules						
-	if [ $? -ne 0 ]; then							
+	udevadm control --reload-rules
+	if [ $? -ne 0 ]; then
 		echo -e "\nThe command ${bold}udevadm control --reload_rules${normal} to reload the udev rules failed. Please restart your computer."
 	else
         # silently check if the Axe-Fx II is connected (and not recognized as USB audio and midi interface);
-		lsusb -d 2466:0003 >/dev/null					
+		lsusb -d 2466:0003 >/dev/null
 		if [ $? -eq 0 ]; then  # in that case:
 			# trigger the new udev rule in order to get the udev rule executed without rebooting or dis-/reconnecting the Axe-Fx II
-			udevadm trigger --action=add --subsystem-match=usb --attr-match=idVendor=2466 --attr-match=idProduct=0003	
+			udevadm trigger --action=add --subsystem-match=usb --attr-match=idVendor=2466 --attr-match=idProduct=0003
 			if [ $? -ne 0 ]; then  # only if it fails
 			    # the user will have to reboot or dis-/reconnect the Axe-Fx II
-				echo -e "\nPlease reboot your Fractal Audio Systems Axe-Fx II or dis- and reconnect the USB cable."	
+				echo -e "\nPlease reboot your Fractal Audio Systems Axe-Fx II or dis- and reconnect the USB cable."
 			fi
 		fi
 	fi
@@ -113,9 +113,9 @@ case $1 in
 		fi
 
         # test if the udev rules file exists in the udev rules directory
-		until [ -f $udev_rules_dir/$udev_rules ]; do			     
+		until [ -f $udev_rules_dir/$udev_rules ]; do
 			request "\nThe udev rules file ${bold}$udev_rules${normal} has not been found. Press [y] to proceed with entering the appropriate path or press any other key to skip this file."
-			
+
 			case $answer in
 			"y"|"Y")
 				echo -e "\nPlease enter the complete path to the udev rules file ${bold}$udev_rules${normal}: "
@@ -124,7 +124,7 @@ case $1 in
 					udev_rules_dir=${udev_rules_dir:0:${#udev_rules_dir} - 1}	# remove last "/" for further processing
 				fi
 				;;
-			
+
 			*)
 				if [ -f "$my_path"/uninstinf ]; then  # if an uninstall information file exists,
 					rm "$my_path"/uninstinf	          # delete it
@@ -179,12 +179,12 @@ case $1 in
 	;;
 
 # option "-h": show help information
-"-h"|"--help")									
+"-h"|"--help")
 	request "\nRunning this script without any option installs the Fractal Audio Systems USB bootloader firmware and udev rules files for the Axe-Fx II (Original, Mark II, XL and XL+).\n\nAdditionally fxload (http://sourceforge.net/projects/linux-hotplug/files/fxload/) is required to upload the firmware to the USB chip of the Fractal Audio Systems Axe-Fx II each time it is connected via USB. This script will NOT install fxload!\n\nOptions:\n\t-u\t\tUninstall - removes the bootloader and udev rules files.\n\t\t\tThe path to the udev rules files can be passed as a second optional parameter.\n\t-v\t\tShows version info.\n\t-h or --help\tShows this text.\n\n${bold}Note:${normal} Install as well as uninstall actions require root permissions.\n\nPress any key..."
 	;;
 
 # no or invalid option: install files
-*)										
+*)
 	echo -e "\n${bold}Install Fractal Audio Systems USB Bootloader${normal}\n"
 	check_root "$fail_msg"
 
@@ -201,12 +201,12 @@ case $1 in
 	fi
 
     # search for the path to the fxload binary
-	fxload_path=$(whereis -b fxload)					
+	fxload_path=$(whereis -b fxload)
 	fxload_path="${fxload_path#*:}"
 	fxload_path=${fxload_path:1:${#fxload_path}}
 
 	# if fxload was not found by whereis, ask for it's path or failing that, cancel.
-	if [ ${#fxload_path} -eq 0 ]; then					
+	if [ ${#fxload_path} -eq 0 ]; then
 		request "\nTo upload the firmware to the USB chip of the Axe-Fx II fxload (http://sourceforge.net/projects/linux-hotplug/files/fxload/) is required.\n\n${bold}fxload${normal} has not been found.\n\nPress [y] if you would like to enter the path to fxload or press any other key to cancel."
 		case $answer in
 		"y"|"Y")
@@ -226,7 +226,7 @@ case $1 in
 	kminor=$(uname -r|cut -f3 -d'.')  # get kernel minor revision
 
 	# test if kernel is older than version 3.10
-	if ( [ ${kvers} -lt 3 ] )  || ( ( [ ${kvers} -eq 3 ] ) && ( [ ${kmajor} -lt 10 ] )  ); then	
+	if ( [ ${kvers} -lt 3 ] )  || ( ( [ ${kvers} -eq 3 ] ) && ( [ ${kmajor} -lt 10 ] )  ); then
 		# test if kernel is at least 2.6.35 (UAC2 compliance)
 		if ( [ ${kvers} -lt 2 ] )  || ( ( [ ${kvers} -eq 2 ] ) && ( [ ${kmajor} -lt 6 ] ) || ( ( [ ${kmajor} -eq 6 ] ) && ( [ ${kminor%%[^0-9]*} -lt 35 ] ) ) ); then
 		      echo -e "\n${bold}WARNING:${normal} The USB audio interface of the Axe-Fx II needs a UAC2 compliant kernel. The present kernel seems to be too old but *may* support the USB MIDI interface of the Axe-Fx II."
@@ -250,7 +250,7 @@ case $1 in
 	# Show Fractal Audio Systems License Agreement
 	request "\nThe USB firmware file ($axefx2loadFW) to be used originates from Fractal Audio Systems. Press any key to show the Fractal Audio Systems Axe-Fx Software License Agreement. After reading it press [q].\n"
 	less "$my_path"/License
-	cat "$my_path"/License							
+	cat "$my_path"/License
 	request "\n\nPress [y] to accept the Fractal Audio Systems Axe-Fx Software License Agreement or press any other key to cancel."
 
 	case $answer in
@@ -258,7 +258,7 @@ case $1 in
 	# Go ahead and install
 	"y"|"Y")
 		# test if the path to udev rules files exists
-		until [ -d $udev_rules_dir ]; do				
+		until [ -d $udev_rules_dir ]; do
 			request "\nThe path ${bold}$udev_rules_dir/${normal} to the udev rules files has not been found. Press [y] to proceed with entering the appropriate path or press any other key to cancel."
 			case $answer in
 			"y"|"Y")
@@ -293,47 +293,45 @@ case $1 in
 		fi
 
 		# make firmware file readable for everybody
-		chmod 644 "$axefx2loadFW_dir/$axefx2loadFW"		
+		chmod 644 "$axefx2loadFW_dir/$axefx2loadFW"
 
-		# Check if Fractal Audio udev rules file does not exist, make if so.
-		if [ ! -f "$udev_rules_dir/$udev_rules" ]; then	     
-			echo -e $header > "$udev_rules_dir/$udev_rules"	 # create udev rules file with header 
-			if [ $? -gt 0 ]; then
-				request "\n$fail_msg"
-				exit 1
-			fi
-			chmod 644 "$udev_rules_dir/$udev_rules"			# make udev rules file user readable
-		fi
-
-		# The udev rule already exists
-		if grep -q "# <Fractal Audio Systems Axe-FX II>" "$udev_rules_dir/$udev_rules"; then
-			echo -e "\n\nA udev rule for the Fractal Audio Systems Axe-Fx II is already present in ${bold}$udev_rules_dir/$udev_rules${normal}. It has not been tested."
-			request "\n Would you like to replace the rule regardless with the correct version for the detected fxload? Press [y] to process or any other key to abort without modifying the udev rules."
-
-			case $answer in 
+		# Check if Fractal Audio udev rules file exists, then ask if it should be replaced
+		if [ -f "$udev_rules_dir/$udev_rules" ]; then
+			echo -e "\n\nThe udev file ${bold}$udev_rules_dir/$udev_rules${normal} is already present. It has not been checked."
+			request "Would you like to replace it? Press [y] to process or any other key to abort without modifying the udev rules."
+			case $answer in
 			"y"|"Y")
-				;;  # Continue regardless...
-			"*")
+				rm "$udev_rules_dir/$udev_rules" # Remove the old udev rule
+				;;
+			*)
 				request "\nAborting without modifying udev rules...\n$fail_msg"
 				exit 0
 				;;
 			esac
 		fi
 
-		# Grab the error message 
+		# Make a new udev rule
+		echo -e $header > "$udev_rules_dir/$udev_rules"	 # create udev rules file with header
+		if [ $? -gt 0 ]; then
+			request "\n$fail_msg"
+			exit 1
+		fi
+		chmod 644 "$udev_rules_dir/$udev_rules"			# make udev rules file user readable
+
+		# Grab the error message
 		# Redirect stderr to stdout using 2>&1
 		help_response=$(fxload 2>&1)
 
 		# Set the udev rule depending on fxload version
 		if [[ $help_response == *"-D"* ]]; then
-			axefx2_rule='\n# <Fractal Audio Systems Axe-FX II>\nACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="2466", ATTR{idProduct}=="0003", RUN+="'$fxload_path' -t fx2lp -I '$axefx2loadFW_dir/$axefx2loadFW' -D $env{DEVNAME}"'	
+			axefx2_rule='\n# <Fractal Audio Systems Axe-FX II>\nACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="2466", ATTR{idProduct}=="0003", RUN+="'$fxload_path' -t fx2lp -I '$axefx2loadFW_dir/$axefx2loadFW' -D $env{DEVNAME}"'
 		# Write the udev rule for the newer fxload (-D replaced with -p)
 		elif [[ $help_response == *"-p"* ]]; then
-			axefx2_rule='\n# <Fractal Audio Systems Axe-FX II>\nACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="2466", ATTR{idProduct}=="0003", RUN+="'$fxload_path' -t fx2lp -I '$axefx2loadFW_dir/$axefx2loadFW' -p $env{BUSNUM},$env{DEVNUM}"'	
+			axefx2_rule='\n# <Fractal Audio Systems Axe-FX II>\nACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="2466", ATTR{idProduct}=="0003", RUN+="'$fxload_path' -t fx2lp -I '$axefx2loadFW_dir/$axefx2loadFW' -p $env{BUSNUM},$env{DEVNUM}"'
 		fi
 
 		# write Axe-Fx II section into udev rules file
-		echo -e $axefx2_rule >> "$udev_rules_dir/$udev_rules"	
+		echo -e $axefx2_rule >> "$udev_rules_dir/$udev_rules"
 		if [ $? -gt 0 ]; then
 			request "\n$fail_msg"
 			exit 1
@@ -345,7 +343,7 @@ case $1 in
 		echo -e "#\n# DO NOT EDIT THIS FILE\n#\n# It has been automatically generated by axefx2setup.sh.\n# Note: This file needs to be in the same path as axefx2setup.sh!\n#\n\n"$udev_rules_dir > "$my_path"/uninstinf
 		request "\n\nInstallation finished. Press any key..."
 		;;
-	
+
 	# Did not accept the license agreement, cancel...
 	*)
 		request "\n\n$cancel_msg"
