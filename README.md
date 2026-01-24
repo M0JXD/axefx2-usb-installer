@@ -15,6 +15,7 @@ This script was first modified on Ubuntu Cinnamon 24.04 and subsequently on Linu
 
 I have created a devd rule and very simple installation script that sets up the Axe-FX II on FreeBSD. Again, you will need to install fxload, which is available from pkg.
 It's bundled here with the Linux script to keep everything together. I've only been testing in a VM but have been able to make recordings in Audacity. Your mileage may vary.
+None of the other BSD's have fxload ported nor is it clear if they have a udev equivalent, so I can't support them.
 
 ## Original README
 
