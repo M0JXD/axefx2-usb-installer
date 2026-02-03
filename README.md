@@ -17,6 +17,8 @@ I have created a devd rule and very simple installation script that sets up the 
 It's bundled here with the Linux script to keep everything together. I've only been testing in a VM but have been able to make recordings in Audacity. Your mileage may vary.
 None of the other BSD's have fxload ported nor is it clear if they have a udev equivalent, so I can't support them.
 
+After running the install script, you might need to issue `service devd restart`.
+
 ## Original README
 
 This installer will install the Axe-FX II USB Audio Class 2.0 firmware and firmware daemon.
@@ -41,3 +43,4 @@ The script has been written under openSUSE 11.4+ but should work with other LINU
 No liability is taken for any damages that may be caused by using this script.
 
 Have a lot of fun!
+
