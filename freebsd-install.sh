@@ -12,6 +12,3 @@ case "$response" in
 		exit 1
         ;;
 esac
-
-
-
